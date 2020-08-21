@@ -27,18 +27,17 @@ def get_arguments():
 
 def validate_ip(ip):
     global done
-    # Group 0 = 192.168.1.1/24
-    # Group 1 = 192.X.X.X/xx
-    # Group 2 = X.168.X.X/xx
-    # Group 3 = X.X.1.X/xx
-    # Group 4 = X.X.X.1/xx
-    # Group 5 = X.X.X.X/24
-    address = re.search(r"((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(24))", ip)
+    # Group 0 = 192.168.1.1
+    # Group 1 = 192.X.X.X
+    # Group 2 = X.168.X.X
+    # Group 3 = X.X.1.X
+    # Group 4 = X.X.X.1
+    address = re.search(r"((\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3}))", ip)
     if address:
-        for index, group in enumerate(address.groups()):
+        for index, group in address.groups():
             if index is 0:
                 continue
-            if not validate_group(index, group):
+            if not validate_group(group):
                 done = True
                 return False
         return True
@@ -46,10 +45,8 @@ def validate_ip(ip):
     return False
 
 
-def validate_group(index, group):
+def validate_group(group):
     int_value = int(group)
-    if index is 5:
-        return 0 <= int_value <= 32
     return 0 <= int_value <= 255
 
 
@@ -101,7 +98,7 @@ def display_results(clients):
     print(str(len(clients)) + ' Client Results\tDuration: ' + str(duration))
 
 
+options = get_arguments()
 t = threading.Thread(target=animate)
 t.start()
-options = get_arguments()
 display_results(scan(options.target))
